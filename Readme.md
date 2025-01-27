@@ -1,6 +1,8 @@
 
 # EasyStack
 
+![EasyStack Banner](https://raw.githubusercontent.com/AyoubBourhfella/easystack/master/assets/EasyStack.png)
+
 **EasyStack** is a powerful and customizable CLI tool for quickly bootstrapping React projects with integrated support for Redux and React Router. It simplifies project initialization by automating the setup of commonly used tools and libraries, saving developers valuable time.
 
 ---

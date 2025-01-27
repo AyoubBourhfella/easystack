@@ -32,7 +32,7 @@ async function main() {
                 name: "bootstrapOption",
                 message: "Do you want to use Bootstrap via CDN or npm?",
                 choices: ["CDN", "npm"],
-                when: (answers) => answers.cssFramework === "Bootstrap", // Only show this if Bootstrap is selected
+                when: (answers) => answers.cssFramework === "Bootstrap", 
             },
             {
                 type: "confirm",
@@ -60,7 +60,7 @@ async function main() {
             process.exit(1);
         }
 
-        process.chdir(projectName); // Navigate to the project directory
+        process.chdir(projectName); 
 
         // Step 2: Install dependencies
         try {
@@ -151,13 +151,12 @@ plugins: [
                 fs.mkdirSync('./src/store', { recursive: true });
 
 
-                // Create actions.js
                 const actionsTypes = `  
               export const INCREMENT = 'INCREMENT';
               export const DECREMENT = 'DECREMENT';
                 `;
                 fs.writeFileSync('./src/store/ActionsTypes.js', actionsTypes);
-                // Create actions.js
+                
                 const actionsJs = `  
               import { INCREMENT, DECREMENT } from './ActionsTypes';
             
@@ -171,7 +170,6 @@ plugins: [
                 `;
                 fs.writeFileSync('./src/store/Actions.js', actionsJs);
 
-                // Create reducer.js
                 const reducerJs = `
               import { INCREMENT, DECREMENT } from './ActionsTypes';
               
@@ -211,7 +209,6 @@ plugins: [
 
 
 
-                // Create simple routes in App.jsx
                 const appJsx = `
 import React from "react";
 import { Route, Routes, Link } from "react-router-dom";
@@ -251,7 +248,6 @@ export default App;
 import React from "react";
                 ` + mainJsxContent;
             }
-            // Define Redux imports and store creation
             const reduxImports = `
 import { Provider } from 'react-redux';
 import { legacy_createStore } from 'redux';
@@ -261,31 +257,25 @@ import Reducer from './store/reducer';
 const store = legacy_createStore(Reducer);
         `;
         
-            // Define Router import
             const routerImport = `
 import { BrowserRouter as Router } from 'react-router-dom';
         `;
         
-            // Step 1: Insert Redux imports if Redux is selected
             if (useRedux) {
-                // Insert Redux imports at the top
                 mainJsxContent = reduxImports + mainJsxContent;
         
-                // Insert store creation right before createRoot
                 mainJsxContent = mainJsxContent.replace(
                     /createRoot\(document\.getElementById\('root'\)\)\.render\(/,
                     (match) => `${reduxStore}\n${match}`
                 );
             }
         
-            // Step 2: Insert Router import if Router is selected
             if (useRouter) {
                
                     mainJsxContent = routerImport + mainJsxContent;
                 
             }
         
-            // Step 3: Wrap the App component with Redux Provider and/or Router
             const appReplacement = () => {
                 let wrapWithProviderAndRouter = "<App />";
         
@@ -311,13 +301,11 @@ import { BrowserRouter as Router } from 'react-router-dom';
                 return wrapWithProviderAndRouter;
             };
         
-            // Step 4: Replace the <App /> component render part with wrapped components
             mainJsxContent = mainJsxContent.replace(
                 /<App \/>/,
                 appReplacement()
             );
         
-            // Step 5: Write the updated content back to main.jsx
             fs.writeFileSync(mainJsxPath, mainJsxContent);
         
             console.log("✔ main.jsx configured.");

@@ -1,7 +1,7 @@
 {
   
   "name": "@ayoubbourhfella/easystack",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A CLI tool to bootstrap React projects with Redux and React Router. And preferable Css Frameworks.",
   "main": "index.js",
   "type": "module",

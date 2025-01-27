@@ -1,0 +1,21 @@
+{
+  "name": "easystack",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "description": "",
+  "bin": {
+    "easystack": "./index.js"
+  },
+  "dependencies": {
+    "commander": "^13.1.0",
+    "execa": "^9.5.2",
+    "inquirer": "^12.3.2"
+  }
+}

@@ -1,48 +1,115 @@
 {
   
   "name": "@ayoubbourhfella/easystack",
-  "version": "1.0.2",
+  
+  "version": "1.0.4",
+  
   "description": "A CLI tool to bootstrap React projects with Redux and React Router. And preferable Css Frameworks.",
+  
   "main": "index.js",
+  
   "type": "module",
+  
   "bin": {
-    "easystack": "./index.js"
+  
+    
+  "easystack": "./index.js"
+  ,
+  "easystack-v": "./index.js --version",
+  "easystack-h": "./index.js --help"
   },
+  
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "lint": "eslint ."
+  
+    
+  "test": "echo \"Error: no test specified\" && exit 1",
+  
+    
+  "start": "node index.js",
+  
+    
+  "lint": "eslint ."
+  
   },
+  
   "keywords": [
-    "react",
-    "redux",
-    "react-router",
-    "cli",
-    "project-setup",
-    "scaffolding",
-    "css-frameworks",
-    "bootstrap",
-    "tailwindcss"
+  
+    
+  "react",
+  
+    
+  "redux",
+  
+    
+  "react-router",
+  
+    
+  "cli",
+  
+    
+  "project-setup",
+  
+    
+  "scaffolding",
+  
+    
+  "css-frameworks",
+  
+    
+  "bootstrap",
+  
+    
+  "tailwindcss"
+  
   ],
+  
   "author": "Ayoub Bourhfella",
+  
   "license": "MIT",
+  
   "dependencies": {
-    "commander": "^13.1.0",
-    "execa": "^9.5.2",
-    "inquirer": "^12.3.2"
+  
+    
+  "commander": "^13.1.0",
+  
+    
+  "execa": "^9.5.2",
+  
+    
+  "inquirer": "^12.3.2"
+  
   },
+  
   "devDependencies": {
-    "eslint": "^8.53.0"
+  
+    
+  "eslint": "^8.53.0"
+  
   },
+  
   "engines": {
-    "node": ">=16.0.0"
+  
+    
+  "node": ">=16.0.0"
+  
   },
+  
   "repository": {
-    "type": "git",
-    "url": "https://github.com/AyoubBourhfella/easystack.git"
+  
+    
+  "type": "git",
+  
+    
+  "url": "https://github.com/AyoubBourhfella/easystack.git"
+  
   },
+  
   "bugs": {
-    "url": "https://github.com/AyoubBourhfella/easystack/issues"
+  
+    
+  "url": "https://github.com/AyoubBourhfella/easystack/issues"
+  
   },
+  
   "homepage": "https://github.com/AyoubBourhfella/easystack#readme"
 }

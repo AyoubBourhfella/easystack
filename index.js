@@ -3,10 +3,23 @@ import inquirer from 'inquirer';
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { Command } from 'commander';
 
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf-8'));
+const version = packageJson.version;
+
+const program = new Command();
+
+program.version(version, '-v, --version', 'Display the current version of EasyStack');
+
+program.parse(process.argv);
 async function main() {
     try {
-        console.log("🚀 Welcome to EasyStack with Vite!");
+        console.log("🚀 Welcome to EasyStack ");
 
         const answers = await inquirer.prompt([
             {
@@ -32,7 +45,7 @@ async function main() {
                 name: "bootstrapOption",
                 message: "Do you want to use Bootstrap via CDN or npm?",
                 choices: ["CDN", "npm"],
-                when: (answers) => answers.cssFramework === "Bootstrap", 
+                when: (answers) => answers.cssFramework === "Bootstrap",
             },
             {
                 type: "confirm",
@@ -60,7 +73,7 @@ async function main() {
             process.exit(1);
         }
 
-        process.chdir(projectName); 
+        process.chdir(projectName);
 
         // Step 2: Install dependencies
         try {
@@ -90,9 +103,7 @@ plugins: [
 
                 fs.writeFileSync(viteConfigPath, viteConfig);
 
-                const cssPath = "src/index.css";
-                const cssContent = `@import "tailwindcss";`;
-                fs.writeFileSync(cssPath, cssContent);
+
 
                 const indexHtmlPath = "./index.html";
                 const indexHtml = fs.readFileSync(indexHtmlPath, "utf-8");
@@ -152,43 +163,43 @@ plugins: [
 
 
                 const actionsTypes = `  
-              export const INCREMENT = 'INCREMENT';
-              export const DECREMENT = 'DECREMENT';
+export const INCREMENT = 'INCREMENT';
+export const DECREMENT = 'DECREMENT';
                 `;
                 fs.writeFileSync('./src/store/ActionsTypes.js', actionsTypes);
-                
+
                 const actionsJs = `  
-              import { INCREMENT, DECREMENT } from './ActionsTypes';
-            
-              export const increment = () => ({
-                type: INCREMENT,
-              });
-              
-              export const decrement = () => ({
-                type: DECREMENT,
-              });
-                `;
+import { INCREMENT, DECREMENT } from './ActionsTypes';
+
+export const increment = () => ({
+  type: INCREMENT,
+});
+
+export const decrement = () => ({
+  type: DECREMENT,
+});
+  `;
                 fs.writeFileSync('./src/store/Actions.js', actionsJs);
 
                 const reducerJs = `
-              import { INCREMENT, DECREMENT } from './ActionsTypes';
-              
-              const initialState = {
-                counter: 0,
-              };
-              
-              const Reducer = (state = initialState, action) => {
-                switch (action.type) {
-                  case INCREMENT:
-                    return { ...state, counter: state.counter + 1 };
-                  case DECREMENT:
-                    return { ...state, counter: state.counter - 1 };
-                  default:
-                    return state;
-                }
-              };
-              
-              export default Reducer;
+import { INCREMENT, DECREMENT } from './ActionsTypes';
+
+const initialState = {
+  counter: 0,
+};
+
+const Reducer = (state = initialState, action) => {
+  switch (action.type) {
+    case INCREMENT:
+      return { ...state, counter: state.counter + 1 };
+    case DECREMENT:
+      return { ...state, counter: state.counter - 1 };
+    default:
+      return state;
+  }
+};
+
+export default Reducer;
                 `;
                 fs.writeFileSync('./src/store/reducer.js', reducerJs);
 
@@ -199,6 +210,9 @@ plugins: [
                 console.error("❌ Failed to set up Redux:", error.message);
             }
         }
+
+
+
 
         // Step 5: Install React Router
         if (useRouter) {
@@ -212,16 +226,18 @@ plugins: [
                 const appJsx = `
 import React from "react";
 import { Route, Routes, Link } from "react-router-dom";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Navbar from "./components/Navbar";
+import "./App.css";
 
 function App() {
   return (
     <div>
-      <nav>
-        <Link to="/">Home</Link> | <Link to="/about">About</Link>
-      </nav>
+      <Navbar />
       <Routes>
-        <Route path="/" element={<h1>Home</h1>} />
-        <Route path="/about" element={<h1>About</h1>} />
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
       </Routes>
     </div>
   );
@@ -235,15 +251,34 @@ export default App;
             } catch (error) {
                 console.error("❌ Failed to set up React Router:", error.message);
             }
+        } else {
+            const appJsx = `
+import React from "react";
+import Home from "./pages/Home";
+import Navbar from "./components/Navbar";
+
+
+function App() {
+  return (
+    <div>
+      
+      <Home />
+    </div>
+  );
+}
+
+export default App;
+            `;
+            fs.writeFileSync("./src/App.jsx", appJsx);
         }
 
         try {
             console.log("\nConfiguring main.jsx...");
-        
+
             const mainJsxPath = "./src/main.jsx";
             let mainJsxContent = fs.readFileSync(mainJsxPath, "utf-8");
-        
-            if(!mainJsxContent.includes('import React from "react";')){
+
+            if (!mainJsxContent.includes('import React from "react";')) {
                 mainJsxContent = `
 import React from "react";
                 ` + mainJsxContent;
@@ -256,29 +291,29 @@ import Reducer from './store/reducer';
             const reduxStore = `
 const store = legacy_createStore(Reducer);
         `;
-        
+
             const routerImport = `
 import { BrowserRouter as Router } from 'react-router-dom';
         `;
-        
+
             if (useRedux) {
                 mainJsxContent = reduxImports + mainJsxContent;
-        
+
                 mainJsxContent = mainJsxContent.replace(
                     /createRoot\(document\.getElementById\('root'\)\)\.render\(/,
                     (match) => `${reduxStore}\n${match}`
                 );
             }
-        
+
             if (useRouter) {
-               
-                    mainJsxContent = routerImport + mainJsxContent;
-                
+
+                mainJsxContent = routerImport + mainJsxContent;
+
             }
-        
+
             const appReplacement = () => {
                 let wrapWithProviderAndRouter = "<App />";
-        
+
                 if (useRedux && useRouter) {
                     wrapWithProviderAndRouter = `
 <Provider store={store}>
@@ -297,23 +332,201 @@ import { BrowserRouter as Router } from 'react-router-dom';
     <App />
 </Router>`;
                 }
-        
+
                 return wrapWithProviderAndRouter;
             };
-        
+
             mainJsxContent = mainJsxContent.replace(
                 /<App \/>/,
                 appReplacement()
             );
-        
+
             fs.writeFileSync(mainJsxPath, mainJsxContent);
-        
+
             console.log("✔ main.jsx configured.");
         } catch (error) {
             console.error("❌ Failed to configure main.jsx:", error.message);
         }
-        
-        
+        // Step 6: Create folder structure
+        try {
+            console.log("\nCreating folder structure...");
+
+            const folders = [
+                'src/components',
+                'src/pages',
+                'src/assets',
+                'src/hooks',
+                'src/utils',
+                'src/services',
+            ];
+
+            folders.forEach(folder => {
+                fs.mkdirSync(folder, { recursive: true });
+            });
+            // make the nav and pages 
+            const navbarJsx = `
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+const Navbar = () => {
+  return (
+    <nav className="navbar">
+      <div className="navbar-container">
+        <Link to="/" className="navbar-logo">
+          EasyStack
+        </Link>
+        <div className="navbar-links">
+          <Link to="/" className="navbar-link">
+            Home
+          </Link>
+          <Link to="/about" className="navbar-link">
+            About
+          </Link>
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;`
+
+            if (useRouter) {
+                fs.writeFileSync("./src/components/Navbar.jsx", navbarJsx);
+            }
+            const homePageJsx = `
+import React from 'react';
+
+const Home = () => {
+  return (
+    <div className="home-container">
+      <h1 className="home-title">Welcome to EasyStack</h1>
+      <p className="home-description">This is Home Page!</p>
+    </div>
+  );
+};
+
+export default Home;
+`;
+            fs.writeFileSync("./src/pages/Home.jsx", homePageJsx);
+            const aboutPageJsx = `
+import React from 'react';
+
+const About = () => {
+  return (
+    <div className="about-container">
+      <h1 className="about-title">About Us</h1>
+      <p className="about-description">Learn more about our cool application!</p>
+    </div>
+  );
+};
+
+export default About;
+`
+            fs.writeFileSync("./src/pages/About.jsx", aboutPageJsx);
+
+            // add css 
+            const indexcss = `
+${cssFramework === "Tailwind CSS" ? '@import "tailwindcss";' : ""}
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+body{
+  margin: 0;
+}
+
+.navbar {
+  background: linear-gradient(to right, #3b82f6, #9333ea); 
+  padding: 1rem; 
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
+}
+
+.navbar-container {
+  max-width: 1200px; 
+  margin: 0 auto; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+.navbar-logo {
+  color: white;
+  font-size: 1.5rem; 
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.navbar-logo:hover {
+  color: #e5e7eb; 
+}
+
+
+.navbar-links {
+  display: flex;
+  gap: 1rem; 
+}
+
+.navbar-link {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease; 
+}
+
+.navbar-link:hover {
+  color: #e5e7eb; 
+}
+
+.home-container {
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(to bottom, #eff6ff, #f3e8ff); 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-title {
+  font-size: 3rem;
+  font-weight: bold; 
+  color: #1e3a8a; 
+  margin-bottom: 1rem; 
+}
+
+.home-description {
+  font-size: 1.25rem; 
+  color: #374151; 
+}
+.about-container {
+  width: 100%;
+  min-height: 100vh; 
+  background: linear-gradient(to bottom, #f5f3ff, #dbeafe); 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-title {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #4c1d95; 
+  margin-bottom: 1rem; 
+}
+
+.about-description {
+  font-size: 1.25rem;
+  color: #374151; 
+}
+
+`;
+            fs.writeFileSync("./src/index.css", indexcss);
+            console.log("✔ Folder structure created.");
+        } catch (error) {
+            console.error("❌ Failed to create folder structure:", error.message);
+        }
+
 
 
         console.log("\n🎉 EasyStack setup complete! Happy coding!");
@@ -323,4 +536,10 @@ import { BrowserRouter as Router } from 'react-router-dom';
     }
 }
 
-main().catch((err) => console.error(err));
+if (process.argv.includes('--version') || process.argv.includes('-v')) {
+    // Display the version and exit
+    console.log(`EasyStack CLI Version: ${version}`);
+} else {
+    // Run the main function
+    main();
+}
